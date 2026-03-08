@@ -141,6 +141,13 @@ pub struct ProxyConfig {
     /// The main `api_key` always acts as admin and is not subject to these limits.
     #[serde(default)]
     pub api_keys: Vec<ProxyApiKey>,
+
+    /// Whether to automatically fetch model pricing from models.dev/api.json.
+    /// When enabled, the app makes a GET request to models.dev every 24 hours to
+    /// refresh cost-per-token data used for usage cost estimates.
+    /// Disable if you prefer no automatic outbound connections to external servers.
+    #[serde(default = "default_true")]
+    pub enable_price_cache: bool,
 }
 
 impl Default for ProxyConfig {
@@ -163,6 +170,7 @@ impl Default for ProxyConfig {
             model_aliases: Vec::new(),
             model_routes: Vec::new(),
             api_keys: Vec::new(),
+            enable_price_cache: true,
         }
     }
 }
@@ -415,6 +423,7 @@ mod tests {
         assert!(!config.allow_lan_access);
         assert_eq!(config.request_timeout, 120);
         assert!(config.enable_logging);
+        assert!(config.enable_price_cache);
         assert!(config.api_key.starts_with("sk-"));
     }
 
@@ -468,5 +477,21 @@ mod tests {
         let config: AppConfig = serde_json::from_str(json).unwrap();
         assert_eq!(config.proxy.port, 8045);
         assert!(!config.proxy.enabled);
+    }
+
+    #[test]
+    fn proxy_config_enable_price_cache_default_for_old_configs() {
+        // Old configs without enable_price_cache field must default to true
+        // so that existing users don't silently lose cost estimation.
+        let json = r#"{"port":8045,"api_key":"sk-test","enabled":false}"#;
+        let config: ProxyConfig = serde_json::from_str(json).unwrap();
+        assert!(config.enable_price_cache);
+    }
+
+    #[test]
+    fn proxy_config_enable_price_cache_can_be_disabled() {
+        let json = r#"{"port":8045,"api_key":"sk-test","enabled":false,"enable_price_cache":false}"#;
+        let config: ProxyConfig = serde_json::from_str(json).unwrap();
+        assert!(!config.enable_price_cache);
     }
 }

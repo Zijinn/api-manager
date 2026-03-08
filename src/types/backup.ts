@@ -63,6 +63,7 @@ export interface ProxyConfig {
   auto_start: boolean;
   request_timeout: number;
   enable_logging: boolean;
+  enable_price_cache?: boolean;
   upstream_proxy: {
     enabled: boolean;
     url: string;

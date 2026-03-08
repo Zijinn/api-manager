@@ -652,7 +652,7 @@ impl TokenManager {
     /// Start the background auto-cleanup task (every 15s).
     /// Also checks for stale model accounts, refreshes them, persists dirty circuit breaker states,
     /// refreshes price cache, and persists proxy stats.
-    pub async fn start_auto_cleanup(&self, upstream: Arc<UpstreamClient>) {
+    pub async fn start_auto_cleanup(&self, upstream: Arc<UpstreamClient>, enable_price_cache: bool) {
         let tracker = self.rate_limit_tracker.clone();
         let cancel = self.cancel_token.child_token();
         let tokens = self.tokens.clone();
@@ -700,8 +700,8 @@ impl TokenManager {
                             }
                         }
 
-                        // Refresh price cache if needed
-                        {
+                        // Refresh price cache if needed (only when opted in)
+                        if enable_price_cache {
                             let price_cache = crate::proxy::price_cache::global();
                             if price_cache.needs_refresh() {
                                 let pc = price_cache.clone();

@@ -233,6 +233,7 @@ fn make_test_proxy_config(port: u16) -> apimanager_lib::models::ProxyConfig {
         auto_start: false,
         request_timeout: 30,
         enable_logging: true,
+        enable_price_cache: false, // no external calls in tests
         upstream_proxy: apimanager_lib::models::UpstreamProxyConfig::default(),
         load_balance_mode: apimanager_lib::models::LoadBalanceMode::default(),
         daily_cost_limit: 0.0,

@@ -5,6 +5,9 @@ logs/
 reference-project/
 docs/
 
+# Tauri generated files
+src-tauri/gen/
+
 # Personal data (account backups, tokens, etc.)
 src-tauri/fixtures/
 data/
