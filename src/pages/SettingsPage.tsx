@@ -310,6 +310,36 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {/* Pricing Data */}
+          <div className="card bg-base-100 border border-base-300">
+            <div className="card-body">
+              <h2 className="card-title text-sm gap-2">
+                <DollarSign size={16} />
+                {t("settings.priceCache")}
+              </h2>
+              <div className="form-control mt-2">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-sm toggle-primary"
+                    checked={config.proxy.enable_price_cache ?? true}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        proxy: {
+                          ...config.proxy,
+                          enable_price_cache: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                  <span className="label-text">{t("settings.enablePriceCache")}</span>
+                </label>
+                <p className="text-xs text-base-content/50 mt-1">{t("settings.priceCacheNote")}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Budget */}
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body">

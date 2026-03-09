@@ -62,7 +62,7 @@ impl AxumServer {
         ));
 
         // Start auto-cleanup (needs upstream for stale model refresh)
-        token_manager.start_auto_cleanup(upstream.clone()).await;
+        token_manager.start_auto_cleanup(upstream.clone(), config.enable_price_cache).await;
 
         // Preflight check — verify account connectivity in the background
         {
@@ -103,8 +103,8 @@ impl AxumServer {
         // Load proxy stats from disk
         crate::proxy::proxy_stats::global().load_from_disk();
 
-        // Start price cache background refresh
-        {
+        // Start price cache background refresh (only when the user has opted in)
+        if config.enable_price_cache {
             let pc = crate::proxy::price_cache::global();
             tokio::spawn(async move {
                 pc.refresh().await;
